@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Jordan Blake — Design Engineer</title>
+<meta name="description" content="Design engineering portfolio of Jordan Blake — interactive 3D project gallery.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+
+  <!-- Ambient background mesh -->
+  <div class="bg-mesh" aria-hidden="true">
+    <div class="blob blob-a"></div>
+    <div class="blob blob-b"></div>
+    <div class="blob blob-c"></div>
+    <div class="bg-grain"></div>
+  </div>
+
+  <!-- ============================== TOP NAV ============================== -->
+  <header class="topnav">
+    <button class="brand" data-nav="home" id="brandBtn" aria-label="Home">JB</button>
+    <nav class="topnav-links glass" aria-label="Primary">
+      <button class="topnav-link" data-nav="home">Home</button>
+      <button class="topnav-link" data-nav="portfolio">Portfolio</button>
+      <button class="topnav-link topnav-link-cta" data-open="contact">Contact</button>
+    </nav>
+  </header>
+
+  <!-- ============================= HOME SCREEN ============================= -->
+  <main class="screen" id="screen-home" data-screen="home">
+    <div class="screen-scroll">
+
+      <!-- Hero / About banner — background photo behind the content -->
+      <section class="hero-banner" id="hero">
+        <img class="hero-banner-bg" id="avatarImg" src="profile.svg" alt="">
+        <div class="hero-banner-overlay"></div>
+
+        <div class="hero-banner-content">
+          <p class="eyebrow" id="personEyebrow">Hello, I'm</p>
+          <h1 class="hero-name" id="personName">—</h1>
+          <p class="hero-role" id="personRole">—</p>
+
+          <p class="hero-bio" id="aboutText">—</p>
+
+          <div class="focus-list" id="focusList"></div>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" id="resumeBtn" href="#" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v13m0 0-4-4m4 4 4-4M5 21h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Resume
+            </a>
+            <div class="hero-socials" id="heroSocials"></div>
+          </div>
+
+          <div class="hero-chip glass" id="availabilityChip">
+            <span class="hero-chip-dot"></span>
+            <span id="availabilityText">—</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Experience -->
+      <section class="section" id="experiencePanel">
+        <h2 class="section-title">Experience</h2>
+        <div class="timeline" id="timeline"></div>
+      </section>
+
+
+      <!-- Projects preview -->
+      <section class="section" id="projectsPreviewPanel">
+        <div class="section-head-row">
+          <h2 class="section-title">Projects</h2>
+          <button class="link-btn" data-nav="portfolio">
+            See all
+            <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="project-grid project-grid-preview" id="projectsPreviewGrid"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- =========================== PORTFOLIO SCREEN =========================== -->
+  <main class="screen" id="screen-portfolio" data-screen="portfolio">
+    <div class="screen-scroll">
+      <header class="screen-header">
+        <h1>Portfolio</h1>
+        <p>A selection of things I've designed, built, and shipped.</p>
+      </header>
+      <div class="project-grid" id="projectsFullGrid"></div>
+    </div>
+  </main>
+
+  <!-- ============================ PROJECT OVERLAY ============================ -->
+  <div class="sheet-backdrop" id="projectBackdrop" hidden></div>
+  <div class="sheet project-sheet glass" id="projectSheet" role="dialog" aria-modal="true" aria-labelledby="projectSheetTitle" hidden>
+    <div class="sheet-grabber" data-close="project"></div>
+    <button class="sheet-close" data-close="project" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <div class="sheet-scroll">
+      <div class="project-sheet-cover" id="projectSheetViewer">
+        <div class="viewer-canvas" id="viewerCanvas"></div>
+        <img class="viewer-fallback" id="projectSheetCover" src="" alt="" hidden>
+        <div class="viewer-loading" id="viewerLoading">
+          <span class="viewer-spinner"></span>
+          <span>Loading model…</span>
+        </div>
+        <div class="viewer-hint glass" id="viewerHint">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 12c2-4 6-6 9-6s7 2 9 6c-2 4-6 6-9 6s-7-2-9-6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg>
+          <span>Drag to rotate · Scroll to zoom</span>
+        </div>
+        <button class="viewer-reset glass" id="viewerReset" aria-label="Reset view">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 4v6h6M20 20v-6h-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 15a8 8 0 0 0 13.9 3M18.5 9A8 8 0 0 0 4.6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="project-sheet-body">
+        <p class="project-sheet-category" id="projectSheetCategory">—</p>
+        <h2 class="project-sheet-title" id="projectSheetTitle">—</h2>
+        <p class="project-sheet-desc" id="projectSheetDesc">—</p>
+        <div class="tag-row" id="projectSheetTags"></div>
+        <div class="project-sheet-links" id="projectSheetLinks"></div>
+        <div class="project-sheet-gallery" id="projectSheetGallery"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ CONTACT OVERLAY ============================ -->
+  <div class="sheet-backdrop" id="contactBackdrop" hidden></div>
+  <div class="sheet contact-sheet glass" id="contactSheet" role="dialog" aria-modal="true" aria-labelledby="contactSheetTitle" hidden>
+    <div class="sheet-grabber" data-close="contact"></div>
+    <button class="sheet-close" data-close="contact" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <div class="sheet-scroll contact-sheet-scroll">
+      <h2 class="contact-title" id="contactSheetTitle">Let's talk</h2>
+      <p class="contact-message" id="contactMessage">—</p>
+
+      <div class="contact-list" id="contactList"></div>
+
+      <div class="contact-socials" id="contactSocials"></div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script type="module" src="viewer.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
